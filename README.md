@@ -1,4 +1,4 @@
-# Android Sentinel - Permission Risk Analyzer
+# Permission Risk Analyzer
 
 ## Description
 This project is an end-to-end Machine Learning cybersecurity application designed to evaluate Android APK manifest permissions and classify applications as either **Benign** or **Malware**.
