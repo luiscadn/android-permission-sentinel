@@ -1,10 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import joblib
 import pandas as pd
 from typing import List
 import os
+import tempfile
+import pyaxmlparser
 
 app = FastAPI(title="Android Security Inspector API")
 
@@ -45,13 +47,12 @@ def get_features():
         return {"features": feature_columns}
     return {"features": []}
 
-@app.post("/predict")
-def predict(request: PredictRequest):
+def run_prediction(permissions_list):
     if not model or not feature_columns:
         return {"error": "Model offline"}
         
     input_data = {col: [0] for col in feature_columns}
-    for perm in request.permissions:
+    for perm in permissions_list:
         if perm in input_data:
             input_data[perm] = [1]
             
@@ -63,5 +64,39 @@ def predict(request: PredictRequest):
         "prediction": int(prediction),
         "benign_probability": round(float(probabilities[0]), 4),
         "malware_probability": round(float(probabilities[1]), 4),
-        "verdict": "Malware" if prediction == 1 else "Benign"
+        "verdict": "Malware" if prediction == 1 else "Benign",
+        "extracted_permissions": permissions_list
     }
+
+@app.post("/predict")
+def predict(request: PredictRequest):
+    return run_prediction(request.permissions)
+
+@app.post("/upload-apk")
+async def upload_apk(file: UploadFile = File(...)):
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".apk") as temp_apk:
+            temp_apk.write(await file.read())
+            temp_apk_path = temp_apk.name
+            
+        apk = pyaxmlparser.APK(temp_apk_path)
+        
+        extracted = []
+        try:
+            extracted = apk.get_permissions()
+        except Exception:
+            try:
+                extracted = apk.get_declared_permissions()
+            except Exception:
+                extracted = []
+                
+        if not isinstance(extracted, list):
+            extracted = list(extracted)
+            
+        extracted = list(set(extracted))
+            
+        os.unlink(temp_apk_path)
+        
+        return run_prediction(extracted)
+    except Exception as e:
+        return {"error": str(e)}
