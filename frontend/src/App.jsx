@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import MatrixCodeRain from './components/ui/matrix-code-rain';
 import './App.css';
+
 
 function App() {
   const [features, setFeatures] = useState([]);
@@ -10,7 +12,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [showCitation, setShowCitation] = useState(false);
-
+  
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -193,28 +195,48 @@ function App() {
     return true;
   });
 
+  const isMalwareResult = result && result.verdict === 'Malware';
+
   return (
-    <div className="sentinel-app">
-      {/* Top Banner / Ticker */}
+    <div className={`sentinel-app ${isMalwareResult ? 'threat-detected' : ''}`}>
+      {/* Background Red Matrix Code Rain (Cybersecurity Hacker Theme) */}
+      <MatrixCodeRain
+        textColor="#ff0000"
+        fontSize={11}
+        speed={0.25}
+        density={4}
+        opacity={0.38}
+      />
+
+      {/* Top Banner / Telemetry HUD Bar */}
       <div className="top-ticker">
         <div className="ticker-content">
-          <span className="ticker-badge">RESEARCH DATASET</span>
+          <span className="ticker-status-dot"></span>
+          <span className="ticker-badge">SYS_STATUS: ONLINE</span>
           <span className="ticker-text">UNIVERSIDAD ICESI · CIBERSEGURIDAD · IEEE COLCOM 2016 · AUDITORÍA ESTÁTICA ANDROID</span>
         </div>
       </div>
 
       <div className="app-container">
-        {/* Navigation & Header */}
+        {/* Navigation & Custom Vector Branding Header */}
         <header className="main-header">
           <div className="brand-block">
-            <div className="shield-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="m9 12 2 2 4-4" />
+            <div className="shield-icon custom-sentinel-icon">
+              <svg width="26" height="26" viewBox="0 0 64 64" fill="none">
+                <path d="M32 6 L54 15 V30 C54 44.5 44 54 32 58 C20 54 10 44.5 10 30 V15 L32 6 Z" 
+                      fill="#0d0d12" stroke="#ef4444" strokeWidth="3" strokeLinejoin="round"/>
+                <path d="M32 13 L47 19.5 V30 C47 40.5 39.5 47.5 32 50.5 C24.5 47.5 17 40.5 17 30 V19.5 L32 13 Z" 
+                      fill="none" stroke="#2c2c3b" strokeWidth="2" strokeDasharray="3 2"/>
+                <circle cx="32" cy="30" r="5" fill="#f59e0b"/>
+                <circle cx="32" cy="30" r="9" fill="none" stroke="#ef4444" strokeWidth="1.5"/>
+                <line x1="32" y1="18" x2="32" y2="24" stroke="#fca5a5" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="32" y1="36" x2="32" y2="42" stroke="#fca5a5" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="20" y1="30" x2="26" y2="30" stroke="#fca5a5" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="38" y1="30" x2="44" y2="30" stroke="#fca5a5" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </div>
             <div>
-              <span className="brand-tag">ANTIMALWARE SENTINEL</span>
+              <span className="brand-tag">SENTINEL THREAT ENGINE</span>
               <h1 className="brand-name">Auditor de Permisos Android</h1>
             </div>
           </div>
@@ -228,7 +250,7 @@ function App() {
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
               </svg>
-              Cita Académica (APA)
+              Cita Académica APA
             </button>
           </div>
         </header>
@@ -237,12 +259,16 @@ function App() {
         {showCitation && (
           <div className="citation-banner">
             <div className="citation-header">
-              <h3> Referencias de Investigación y Publicaciones</h3>
+              <h3>Autoría del Proyecto & Referencias de Investigación</h3>
               <button className="btn-close" onClick={() => setShowCitation(false)}>×</button>
             </div>
             <div className="citation-body">
               <p className="citation-item">
-                <strong>Publicación Principal (IEEE):</strong><br />
+                <strong>Desarrollo de Software & Modelo de ML:</strong><br />
+                <strong>Luis Cadena</strong> — Diseño y desarrollo de la aplicación web, estructuración y procesamiento del conjunto de datos CSV y entrenamiento de los clasificadores de Machine Learning: Random Forest & Árboles de Decisión.
+              </p>
+              <p className="citation-item">
+                <strong>Investigación Base & Publicación IEEE:</strong><br />
                 Urcuqui, C., & Navarro, A. (2016, April). <em>Machine learning classifiers for android malware analysis</em>. In Communications and Computing (COLCOM), 2016 IEEE Colombian Conference on (pp. 1-6). IEEE.
               </p>
               <p className="citation-item">
@@ -264,7 +290,9 @@ function App() {
               Detección de malware mediante <span className="highlight-serif">vectores de permisos</span> en Android.
             </h2>
             <p className="hero-description">
-              Herramienta de análisis estático basada en la producción científica de los profesores <strong>Christian Urcuqui</strong> y <strong>Andrés Navarro</strong> (Universidad ICESI). Modela la firma de riesgo de cada aplicación mediante un vector binario de permisos <code className="code-pill">&#123;1 = solicitado, 0 = no solicitado&#125;</code> clasificado como <strong>Malware (1)</strong> o <strong>Benigno (0)</strong>.
+              Plataforma web y modelos de Machine Learning desarrollados por <strong>Luis Cadena</strong> para la materia de Ciberseguridad de la Universidad ICESI.
+              <br /><br />
+              Basado en la investigación científica y dataset original de los profesores <strong>Christian Urcuqui</strong> y <strong>Andrés Navarro</strong>. Modela la firma de riesgo de cada aplicación mediante un vector binario de permisos <code className="code-pill">&#123;1 = solicitado, 0 = no solicitado&#125;</code> clasificado como <strong>Malware (1)</strong> o <strong>Benigno (0)</strong>.
             </p>
           </div>
 
@@ -285,6 +313,102 @@ function App() {
               </div>
               <div className="metric-value">Scikit-Learn</div>
               <div className="metric-footer">Random Forest / Decision Trees</div>
+            </div>
+          </div>
+        </section>
+
+        {/* Bento Features Grid (Features-8 Inspired Architecture) */}
+        <section className="bento-features-section">
+          <div className="bento-grid-container">
+            {/* Card 1: Vector Binario 100% */}
+            <div className="bento-card col-2">
+              <div className="bento-visual-container ribbon-box">
+                <svg className="bento-svg ribbon-svg" viewBox="0 0 254 104" fill="none">
+                  <path
+                    d="M112.891 97.7022C140.366 97.0802 171.004 94.6715 201.087 87.5116C210.43 85.2881 219.615 82.6412 228.284 78.2473C232.198 76.3179 235.905 73.9942 239.348 71.3124C241.85 69.2557 243.954 66.7571 245.555 63.9408C249.34 57.3235 248.281 50.5341 242.498 45.6109"
+                    stroke="var(--red-primary)"
+                    strokeWidth="2.5"
+                  />
+                </svg>
+                <span className="bento-hero-stat">100%</span>
+              </div>
+              <div className="bento-text-box center-text">
+                <h3 className="bento-card-title">Vector Binario Cobertura</h3>
+                <p className="bento-card-desc">Evaluación del conjunto completo de 330 atributos binarios extraídos de cada APK.</p>
+              </div>
+            </div>
+
+            {/* Card 2: Extracción Estática Segura */}
+            <div className="bento-card col-2">
+              <div className="bento-visual-container radar-box">
+                <div className="radar-circle-outer">
+                  <svg className="bento-svg radar-svg" viewBox="0 0 212 143" fill="none">
+                    <path
+                      d="M44.0209 55.3542C43.1945 54.7639 42.6916 54.0272 42.5121 53.1442C50.632 40.3611 59.812 32.5694 70.8525 27.0208C81.8931 21.4722 93.668 18.6979 106.177 18.6979C118.691 18.6979 130.497 21.3849 141.594 26.7587"
+                      stroke="var(--red-primary)"
+                      strokeWidth="2.5"
+                    />
+                    <path d="M3 72H209" stroke="var(--gold-primary)" strokeWidth="3" strokeLinecap="round" />
+                  </svg>
+                </div>
+              </div>
+              <div className="bento-text-box center-text">
+                <h3 className="bento-card-title">Inspección Estática Segura</h3>
+                <p className="bento-card-desc">Análisis autónomo sin ejecución en sandbox, garantizando cero riesgo de infección.</p>
+              </div>
+            </div>
+
+            {/* Card 3: Algoritmo ML Supervisado */}
+            <div className="bento-card col-2">
+              <div className="bento-visual-container wave-box">
+                <svg className="bento-svg wave-svg" viewBox="0 0 386 123" fill="none">
+                  <path
+                    d="M3 121C3 121 36 87 66 80C96 80 108 64 125 92C153 80 193 92 213 64C243 92 265 60 285 87C304 73 333 64 362 80"
+                    stroke="var(--gold-accent)"
+                    strokeWidth="3"
+                  />
+                </svg>
+              </div>
+              <div className="bento-text-box center-text">
+                <h3 className="bento-card-title">Clasificación en Milisegundos</h3>
+                <p className="bento-card-desc">Predicción probabilística ultra-rápida utilizando Scikit-Learn Random Forest.</p>
+              </div>
+            </div>
+
+            {/* Card 4: Respaldo Científico e Investigación ICESI */}
+            <div className="bento-card col-3">
+              <div className="bento-card-inner">
+                <div className="bento-badge-row">
+                  <div className="bento-icon-pill">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                  </div>
+                  <span className="bento-badge-text">UNIVERSIDAD ICESI · CIBERSEGURIDAD</span>
+                </div>
+                <div className="bento-text-box">
+                  <h3 className="bento-card-title">Dataset de Investigación IEEE COLCOM</h3>
+                  <p className="bento-card-desc">Construcción y curaduría de muestras legítimas y maliciosas documentadas por C. Urcuqui & A. Navarro (2016).</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 5: Firmas de Amenazas Conocidas */}
+            <div className="bento-card col-3">
+              <div className="bento-card-inner">
+                <div className="bento-badge-row">
+                  <div className="bento-icon-pill gold">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                  </div>
+                  <span className="bento-badge-text gold">PATRONES DE MALWARE DETECTADOS</span>
+                </div>
+                <div className="bento-text-box">
+                  <h3 className="bento-card-title">Filtros de Riesgo SMS, Spyware & Adware</h3>
+                  <p className="bento-card-desc">Detección de combinaciones abusivas como lectura de SMS, micrófono, cámara y geolocalización.</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -359,10 +483,10 @@ function App() {
                   Mensajería SMS
                 </button>
                 <button className="preset-chip dangerous" onClick={() => applyPreset('suspicious_flashlight')}>
-                  ⚠️ Linterna Sospechosa
+                  Linterna Sospechosa
                 </button>
                 <button className="preset-chip sample-malware" onClick={() => applyPreset('sample_spyware')}>
-                  🔥 APK Muestra (Spyware)
+                  APK Muestra (Spyware)
                 </button>
               </div>
             </div>
@@ -488,7 +612,7 @@ function App() {
               )}
             </div>
 
-            {/* Category Filter Pills (No emojis) */}
+            {/* Category Filter Pills */}
             <div className="category-filters">
               <button
                 className={`filter-tab ${activeCategory === 'all' ? 'active' : ''}`}
@@ -551,7 +675,7 @@ function App() {
         {/* Footer */}
         <footer className="main-footer">
           <p>
-            Desarrollado para la materia de <strong>Ciberseguridad</strong> · Universidad ICESI · Basado en la investigación de C. Urcuqui & A. Navarro (2016)
+            Diseñado y Desarrollado por <strong>Luis Cadena</strong> · Ciberseguridad · Universidad ICESI · Basado en la investigación de C. Urcuqui & A. Navarro (2016)
           </p>
         </footer>
       </div>
