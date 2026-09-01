@@ -1,52 +1,82 @@
-# Permission Risk Analyzer
+# Android Permission Sentinel
 
-## Description
-This project is an end-to-end Machine Learning cybersecurity application designed to evaluate Android APK manifest permissions and classify applications as either **Benign** or **Malware**.
+## Overview
+Android Permission Sentinel is an end-to-end applied machine learning cybersecurity platform designed to analyze Android application manifest permissions and determine whether an APK exhibits benign or malicious behavior.
 
-It was built as part of my initial cybersecurity and applied machine learning research at Universidad ICESI.
+The system performs static manifest permission extraction and processes permission vectors through a trained Random Forest classification model to calculate risk probabilities.
 
-## Architecture
-- **Machine Learning Engine**: Random Forest Classifier trained on Android manifest permission vectors, achieving an accuracy of **91.25%**.
-- **Backend API**: Asynchronous RESTful service built with FastAPI (`Python`).
-- **Frontend Interface**: Modern, responsive web application built with React and Vite.
+Live Deployment: [android-permission-sentinel.vercel.app](https://android-permission-sentinel.vercel.app/)
+
+---
+
+## Interface Previews
+
+### Dashboard and Analysis Overview
+![Dashboard Overview](previews/home.png)
+
+### Vector Assessment and Permission Inspector
+![Vector Assessment](previews/vectordeprueba.png)
+
+---
+
+## Core Capabilities
+- Automated Static APK Parsing: Extraction of declared and requested permissions from uploaded APK files without executing binary code.
+- Custom Vector Evaluation: Interactive permission selection and preset templates for simulating known application profiles.
+- Machine Learning Risk Scoring: Inference pipeline delivering classification verdicts, benign confidence levels, and malware risk percentages.
+
+---
+
+## Technical Architecture
+- Machine Learning Classifier: Scikit-learn Random Forest model trained on structured Android permission datasets, reaching a benchmark accuracy of 91.25 percent.
+- Backend Application Programming Interface: High-performance asynchronous RESTful service implemented with FastAPI and Python.
+- Frontend Client: Single-page application built with React, Vite, and custom user interface components.
+
+---
 
 ## Project Structure
 ```text
 .
-├── backend/            # FastAPI REST API & Saved ML Model
-│   ├── main.py
-│   ├── malware_model.joblib
-│   └── model_features.joblib
-├── frontend/           # React + Vite Web Application
-│   ├── src/
-│   ├── package.json
-│   └── vite.config.js
-├── train.csv           # Android Permission Dataset
-├── train_model.py      # ML Model Training Script
-└── README.md
+├── backend/                  # RESTful API and serialized model artifacts
+│   ├── main.py               # Application endpoints and inference logic
+│   ├── malware_model.joblib  # Serialized Random Forest classifier
+│   ├── model_features.joblib # Feature vector definitions
+│   └── requirements.txt      # Python dependencies
+├── frontend/                 # React and Vite client application
+│   ├── src/                  # Application source code and components
+│   ├── package.json          # Node.js dependencies and scripts
+│   └── vite.config.js        # Build and development configuration
+├── previews/                 # Interface screenshots and documentation assets
+├── train.csv                 # Labeled Android permission dataset
+├── train_model.py            # Training and model evaluation script
+└── README.md                 # Project documentation
 ```
 
-## Getting Started
+---
 
-### 1. Requirements
-- Python 3.9+
-- Node.js 18+
+## Local Development and Deployment
 
-### 2. Backend Setup
+### Prerequisites
+- Python 3.9 or higher
+- Node.js 18 or higher
+
+### 1. Backend Service
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r backend/requirements.txt
 python3 train_model.py
 cd backend
-uvicorn main:app --reload
+uvicorn main:app --reload --port 8000
 ```
 
-### 3. Frontend Setup
+### 2. Frontend Client
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+### 3. Environment Configuration
+The frontend communicates with the backend through the following environment variable:
+- `VITE_API_URL`: Target base URL for the backend API service. Defaults to `http://localhost:8000` during local execution.
+
