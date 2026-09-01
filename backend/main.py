@@ -25,21 +25,36 @@ FEATURES_PATH = os.path.join(BASE_DIR, "model_features.joblib")
 model = None
 feature_columns = None
 
-@app.on_event("startup")
-def load_model():
+def init_model():
     global model, feature_columns
     try:
-        model = joblib.load(MODEL_PATH)
-        feature_columns = joblib.load(FEATURES_PATH)
+        if os.path.exists(MODEL_PATH) and os.path.exists(FEATURES_PATH):
+            model = joblib.load(MODEL_PATH)
+            feature_columns = joblib.load(FEATURES_PATH)
+            print("Model and features successfully loaded.")
+        else:
+            print(f"Model files not found in {BASE_DIR}")
     except Exception as e:
         print(f"Error loading model: {e}")
+
+# Load immediately on import
+init_model()
+
+@app.on_event("startup")
+def startup_event():
+    if model is None or feature_columns is None:
+        init_model()
 
 class PredictRequest(BaseModel):
     permissions: List[str]
 
 @app.get("/")
 def read_root():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "model_loaded": model is not None,
+        "features_loaded": feature_columns is not None
+    }
 
 @app.get("/features")
 def get_features():
