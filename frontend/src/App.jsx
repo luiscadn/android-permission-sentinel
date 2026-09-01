@@ -3,6 +3,8 @@ import MatrixCodeRain from './components/ui/matrix-code-rain';
 import './App.css';
 
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/+$/, '');
+
 function App() {
   const [features, setFeatures] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,7 +19,7 @@ function App() {
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:8000/features')
+    fetch(`${API_BASE_URL}/features`)
       .then(res => res.json())
       .then(data => {
         if (data.features) {
@@ -25,7 +27,7 @@ function App() {
         }
       })
       .catch(() => {
-        setError('No se pudo conectar con el servidor backend de análisis (http://localhost:8000). Verifique que esté activo.');
+        setError(`No se pudo conectar con el servidor backend de análisis (${API_BASE_URL}). Verifique que esté activo.`);
       });
   }, []);
 
@@ -105,7 +107,7 @@ function App() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8000/predict', {
+      const response = await fetch(`${API_BASE_URL}/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ permissions: selectedPermissions }),
@@ -138,7 +140,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:8000/upload-apk', {
+      const response = await fetch(`${API_BASE_URL}/upload-apk`, {
         method: 'POST',
         body: formData,
       });
